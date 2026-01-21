@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Академия Героев: REBORN</title>
     <style>
+        /* Шрифты */
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;600;800&display=swap');
 
         :root {
@@ -25,42 +26,31 @@
             margin: 0; padding: 0;
             color: #e0e6ed;
             min-height: 100vh;
-            background-color: #050505;
+            background-color: #000000; /* Черный фон по умолчанию */
             background-size: cover; background-position: center; background-attachment: fixed;
             transition: background-image 0.8s ease-in-out;
             overflow-x: hidden;
         }
 
-        /* --- НОВЫЕ ФОНОВЫЕ ИЗОБРАЖЕНИЯ ПО ТВОЕМУ ЗАПРОСУ --- */
-        
-        /* Старт: Башня Академии (Твоя первая ссылка) */
+        /* --- ФОНЫ --- */
         #start-screen { 
             background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://static.wikia.nocookie.net/marvelvscapcom/images/8/8f/Avengers_Tower.png/revision/latest/scale-to-width-down/1200?cb=20171123083437'); 
         }
-        
-        /* Рекрут (1 уровень): Та же Башня Академии */
         body.theme-newbie { 
             background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://static.wikia.nocookie.net/marvelvscapcom/images/8/8f/Avengers_Tower.png/revision/latest/scale-to-width-down/1200?cb=20171123083437'); 
         }
-        
-        /* Агент (2 уровень): Коридор Академии (Заменил дубликат на подходящий коридор) */
         body.theme-agent { 
             background-image: linear-gradient(rgba(10,0,20,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1507643195032-c9e956934891?q=80&w=1920'); 
         }
-        
-        /* Мастер (3 уровень): Защита города (Твоя третья ссылка, комикс-стиль) */
         body.theme-master { 
             background-image: linear-gradient(rgba(20,0,0,0.8), rgba(0,0,0,0.95)), url('https://s.tmimgcdn.com/scr/800x500/152100/superhero-power-in-city-illustration_152188-original.jpg'); 
             background-position: top center;
         }
-        
-        /* Финал: Спасенный город (Оставил прошлый, т.к. ты забыл ссылку) */
         #final-screen { 
             background-image: url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=1920'); 
         }
 
-
-        /* UI ЭЛЕМЕНТЫ */
+        /* UI Стили */
         .glass-panel {
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -161,7 +151,7 @@
             font-family: monospace; border-left: 4px solid var(--accent); padding-left: 20px;
         }
 
-        /* ВОПРОСНИК */
+        /* МОДАЛКИ */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
@@ -191,7 +181,7 @@
         .ans-btn.correct { background: rgba(0, 255, 157, 0.2); border-color: var(--success); color: var(--success); }
         .ans-btn.wrong { background: rgba(255, 0, 60, 0.2); border-color: var(--danger); color: var(--danger); }
 
-        /* ТИТРЫ */
+        /* ФИНАЛ */
         #final-screen { z-index: 10000; overflow: hidden; }
         .final-score {
             font-family: var(--font-head); font-size: 6rem; color: var(--success);
@@ -218,18 +208,16 @@
         .notif.success { border-color: var(--success); }
         .notif.error { border-color: var(--danger); }
         @keyframes slideInRight { from{transform: translateX(100%);} to{transform: translateX(0);} }
-
-        /* Кнопка закрытия */
         .close-icon { position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer; color: #555; transition:0.2s; }
         .close-icon:hover { color: var(--danger); }
 
     </style>
 </head>
-<body class="theme-newbie">
+<body class="theme-newbie" style="background-color: #000;">
 
     <div id="start-screen" class="screen-overlay" style="display: flex;">
         <h1 style="font-family: 'Orbitron'; font-size: 4rem; text-align: center; text-shadow: 0 0 30px var(--accent); margin-bottom: 0;">ACADEMY<br><span style="color:var(--accent)">REBORN</span></h1>
-        <p style="color:#aaa; margin-bottom: 40px; letter-spacing: 2px;">SYSTEM READY /// V.12.0</p>
+        <p style="color:#aaa; margin-bottom: 40px; letter-spacing: 2px;">SYSTEM READY /// V.14.0 FINAL</p>
         <button class="btn-main" onclick="startGame()">НАЧАТЬ</button>
     </div>
 
@@ -332,7 +320,7 @@
     <div id="notif-area"></div>
 
     <script>
-        // --- ДАННЫЕ (Короткие вопросы) ---
+        // --- ДАННЫЕ ---
         const db = {
             newbie: { 
                 speech: [
@@ -418,42 +406,35 @@
             end: "МИССИЯ ВЫПОЛНЕНА.<br><br>Ты сделал это! Благодаря твоим ответам, логике и честности, город спасен. Жители могут спать спокойно, зная, что такие герои, как ты, стоят на страже.<br><br>Ты — настоящая Легенда."
         };
 
-        // --- СОСТОЯНИЕ ИГРЫ ---
-        let state = {
-            rank: 'newbie',
-            coins: 0,
-            prog: { speech: 0, logic: 0, crit: 0 },
-            hackDone: false
-        };
-        let tempNextRank = null; // Для перехода
+        const SAVE_KEY = 'heroSaveV14_Final';
+        let state = { rank: 'newbie', coins: 0, prog: { speech: 0, logic: 0, crit: 0 }, hackDone: false };
+        let tempNextRank = null;
 
-        // --- ФУНКЦИИ ---
-
+        // --- ЛОГИКА ---
         function startGame() {
-            // Проверка сохранения (Ключ новый V12)
-            const save = localStorage.getItem('heroSaveV12_Fixed');
+            const save = localStorage.getItem(SAVE_KEY);
             document.getElementById('start-screen').style.display = 'none';
 
             if (save) {
-                state = JSON.parse(save);
-                if (state.rank === 'omega') {
-                    showFinal();
+                let savedState = JSON.parse(save);
+                if (savedState.rank === 'omega') {
+                    // Если игра была пройдена, сбрасываем прогресс для новой игры
+                    state = { rank: 'newbie', coins: 0, prog: { speech: 0, logic: 0, crit: 0 }, hackDone: false };
+                    showStory('start');
                 } else {
+                    state = savedState;
                     initGameUI();
                 }
             } else {
-                // Новая игра - показать сюжет
                 showStory('start');
             }
         }
 
         function showStory(key) {
             const txt = stories[key];
-            const screen = document.getElementById('story-screen');
             document.getElementById('story-text').innerHTML = txt;
-            screen.style.display = 'flex'; // Явный flex
+            document.getElementById('story-screen').style.display = 'flex';
             
-            // Если это конец
             if(key === 'end') {
                 document.querySelector('#story-screen button').onclick = () => {
                      document.getElementById('story-screen').style.display = 'none';
@@ -464,15 +445,12 @@
 
         function closeStory() {
             document.getElementById('story-screen').style.display = 'none';
-            
-            // Если был запланирован переход на новый ранг
             if (tempNextRank) {
                 state.rank = tempNextRank;
                 state.prog = { speech: 0, logic: 0, crit: 0 };
                 state.hackDone = false;
                 tempNextRank = null;
             }
-            
             initGameUI();
             saveGame();
         }
@@ -491,23 +469,19 @@
             document.getElementById('location-name').innerText = rData.loc;
             document.getElementById('location-desc').innerText = rData.desc;
 
-            // Прогресс бары
             ['speech', 'logic', 'crit'].forEach(type => {
                 const pct = (state.prog[type] / 5) * 100;
                 document.getElementById(`bar-${type}`).style.width = pct + '%';
             });
 
-            // Карточка взлома
             const hCard = document.getElementById('card-hack');
             if (state.hackDone) {
-                hCard.classList.remove('special');
-                hCard.classList.add('completed');
+                hCard.classList.remove('special'); hCard.classList.add('completed');
                 document.getElementById('hack-title').innerText = "ВЗЛОМАНО";
                 document.getElementById('hack-desc').innerText = "Доступ получен";
                 document.getElementById('hack-desc').style.color = "var(--success)";
             } else {
-                hCard.classList.add('special');
-                hCard.classList.remove('completed');
+                hCard.classList.add('special'); hCard.classList.remove('completed');
                 document.getElementById('hack-title').innerText = "ВЗЛОМ";
                 document.getElementById('hack-desc').innerText = `Награда: ${rData.rewardH} 🪙`;
                 document.getElementById('hack-desc').style.color = "#ff88aa";
@@ -516,27 +490,14 @@
         }
 
         function openTask(type) {
-            if (state.prog[type] >= 5) {
-                notify("Этот навык уже прокачан на максимум!", "success");
-                return;
-            }
-
-            const qList = db[state.rank][type];
-            const qIndex = state.prog[type]; // Берем вопрос по порядку 0..4
-            const qData = qList[qIndex];
-
-            const modal = document.getElementById('quiz-modal');
-            const txt = document.getElementById('quiz-text');
-            const ansDiv = document.getElementById('quiz-answers');
+            if (state.prog[type] >= 5) { notify("Максимум!", "success"); return; }
+            const qData = db[state.rank][type][state.prog[type]];
             
-            txt.innerText = qData.q;
+            document.getElementById('quiz-text').innerText = qData.q;
+            const ansDiv = document.getElementById('quiz-answers');
             ansDiv.innerHTML = '';
 
-            // Перемешиваем ответы
-            let answers = [
-                { t: qData.a[0], ok: true },
-                { t: qData.a[1], ok: false }
-            ].sort(() => Math.random() - 0.5);
+            let answers = [{ t: qData.a[0], ok: true }, { t: qData.a[1], ok: false }].sort(() => Math.random() - 0.5);
 
             answers.forEach(ans => {
                 let btn = document.createElement('div');
@@ -545,66 +506,43 @@
                 btn.onclick = () => checkAnswer(btn, ans.ok, type);
                 ansDiv.appendChild(btn);
             });
-
             openModal('quiz-modal');
         }
 
         function checkAnswer(btn, isCorrect, type) {
-            // Блокируем все кнопки
-            const all = document.querySelectorAll('.ans-btn');
-            all.forEach(b => b.style.pointerEvents = 'none');
-
+            document.querySelectorAll('.ans-btn').forEach(b => b.style.pointerEvents = 'none');
             if (isCorrect) {
                 btn.classList.add('correct');
-                const reward = ranks[state.rank].rewardQ;
-                state.coins += reward;
+                state.coins += ranks[state.rank].rewardQ;
                 state.prog[type]++;
-                notify(`ВЕРНО! +${reward} монет`, "success");
-                
-                setTimeout(() => {
-                    closeModal('quiz-modal');
-                    updateUI();
-                }, 1000);
+                notify("ВЕРНО!", "success");
+                setTimeout(() => { closeModal('quiz-modal'); updateUI(); }, 1000);
             } else {
                 btn.classList.add('wrong');
-                notify("Ошибка! Попробуй снова.", "error");
-                setTimeout(() => {
-                    closeModal('quiz-modal');
-                }, 1000);
+                notify("Ошибка!", "error");
+                setTimeout(() => { closeModal('quiz-modal'); }, 1000);
             }
         }
 
         function openHack() {
             if(state.hackDone) return;
+            let a, b, c, q, correct, options;
             
-            let html = '';
-            let q = ''; 
-            let correct = 0;
-            let options = [];
-
-            // Генерация примера
             if(state.rank === 'newbie') {
-                let a = rInt(10, 50), b = rInt(10, 50);
-                correct = a + b; q = `${a} + ${b} = ?`;
+                a = rInt(10, 50); b = rInt(10, 50); correct = a + b; q = `${a} + ${b} = ?`;
                 options = [correct, correct+5, correct-2];
             } else if (state.rank === 'agent') {
-                let a = rInt(3, 10), b = rInt(3, 10);
-                correct = a * b; q = `${a} × ${b} = ?`;
+                a = rInt(3, 10); b = rInt(3, 10); correct = a * b; q = `${a} × ${b} = ?`;
                 options = [correct, correct+2, correct-3];
             } else {
-                let a = rInt(5, 15), b = rInt(2, 5), c = rInt(10, 100);
-                correct = a * b + c; q = `${a} × ${b} + ${c} = ?`;
+                a = rInt(5, 15); b = rInt(2, 5); c = rInt(10, 100); correct = a * b + c; q = `${a} × ${b} + ${c} = ?`;
                 options = [correct, correct+10, correct-10];
             }
             options.sort(()=>Math.random()-0.5);
 
-            html += `<h1 style="color:white; font-size:3rem; margin:20px 0;">${q}</h1>`;
-            html += `<div style="display:flex; gap:10px; justify-content:center;">`;
-            options.forEach(opt => {
-                html += `<button class="btn-main" onclick="solveHack(${opt}, ${correct})" style="font-size:1.2rem; min-width:80px;">${opt}</button>`;
-            });
+            let html = `<h1 style="color:white; font-size:3rem; margin:20px 0;">${q}</h1><div style="display:flex; gap:10px; justify-content:center;">`;
+            options.forEach(opt => html += `<button class="btn-main" onclick="solveHack(${opt}, ${correct})" style="font-size:1.2rem; min-width:80px;">${opt}</button>`);
             html += `</div>`;
-
             document.getElementById('hack-content').innerHTML = html;
             openModal('hack-modal');
         }
@@ -612,37 +550,28 @@
         function solveHack(val, correct) {
             if (val === correct) {
                 state.hackDone = true;
-                const r = ranks[state.rank].rewardH;
-                state.coins += r;
-                notify(`СИСТЕМА ВЗЛОМАНА! +${r} монет`, "success");
+                state.coins += ranks[state.rank].rewardH;
+                notify("ВЗЛОМАНО!", "success");
                 closeModal('hack-modal');
                 updateUI();
             } else {
-                notify("ОШИБКА ДОСТУПА", "error");
+                notify("ОШИБКА", "error");
                 closeModal('hack-modal');
             }
         }
 
         function checkRankUp() {
             const p = state.prog;
-            const fullSkills = (p.speech >= 5 && p.logic >= 5 && p.crit >= 5);
-            const nextKey = ranks[state.rank].next;
+            if (p.speech < 5 || p.logic < 5 || p.crit < 5) { notify("Нужно прокачать все навыки!", "error"); return; }
+            
             const cost = ranks[state.rank].cost;
-
-            if (!fullSkills) {
-                notify("Сначала прокачай все навыки до максимума!", "error");
-                return;
-            }
-            if (!nextKey) return;
-
-            let html = `<p style="font-size:1.2rem; color:#aaa;">Стоимость перехода: <span style="color:var(--gold); font-weight:bold;">${cost} 🪙</span></p>`;
+            let html = `<p style="font-size:1.2rem; color:#aaa;">Цена: <span style="color:var(--gold); font-weight:bold;">${cost} 🪙</span></p>`;
             
             if (state.coins >= cost) {
-                html += `<button class="btn-main" onclick="buyRank('${nextKey}', ${cost})">КУПИТЬ ДОСТУП</button>`;
+                html += `<button class="btn-main" onclick="buyRank('${ranks[state.rank].next}', ${cost})">КУПИТЬ</button>`;
             } else {
-                html += `<button class="btn-main" style="background:#444; color:#888; cursor:not-allowed;">НЕДОСТАТОЧНО СРЕДСТВ</button>`;
+                html += `<button class="btn-main" style="background:#444; color:#888;">НЕДОСТАТОЧНО СРЕДСТВ</button>`;
             }
-
             document.getElementById('store-content').innerHTML = html;
             openModal('store-modal');
         }
@@ -650,63 +579,41 @@
         function buyRank(nextKey, cost) {
             state.coins -= cost;
             closeModal('store-modal');
-            tempNextRank = nextKey; 
+            tempNextRank = nextKey;
             
-            let storyKey = '';
-            if (nextKey === 'agent') storyKey = 'toAgent';
-            if (nextKey === 'master') storyKey = 'toMaster';
-            if (nextKey === 'omega') storyKey = 'end';
-
             document.getElementById('game-ui').style.display = 'none';
-            showStory(storyKey);
+            if (nextKey === 'agent') showStory('toAgent');
+            else if (nextKey === 'master') showStory('toMaster');
+            else if (nextKey === 'omega') showStory('end');
         }
 
         function showFinal() {
             state.rank = 'omega';
             saveGame();
-            
             document.getElementById('game-ui').style.display = 'none';
             document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('story-screen').style.display = 'none';
-            
-            const final = document.getElementById('final-screen');
-            final.style.display = 'flex';
-        }
-
-        // --- УТИЛИТЫ ---
-        function rInt(min, max) { return Math.floor(Math.random() * (max - min + 1) ) + min; }
-        
-        function openModal(id) {
-            const m = document.getElementById(id);
-            m.style.display = 'flex';
-            setTimeout(() => { m.classList.add('open'); }, 10);
-        }
-
-        function closeModal(id) {
-            const m = document.getElementById(id);
-            m.classList.remove('open');
-            setTimeout(() => { m.style.display = 'none'; }, 300);
-        }
-
-        function notify(msg, type) {
-            const n = document.createElement('div');
-            n.className = `notif ${type}`;
-            n.innerText = msg;
-            document.getElementById('notif-area').appendChild(n);
-            setTimeout(() => n.remove(), 3000);
-        }
-
-        function saveGame() {
-            localStorage.setItem('heroSaveV12_Fixed', JSON.stringify(state));
+            document.getElementById('final-screen').style.display = 'flex';
         }
 
         function fullReset() {
-            if(confirm("Начать игру с самого начала?")) {
-                localStorage.removeItem('heroSaveV12_Fixed');
+            if(confirm("Сбросить весь прогресс?")) {
+                localStorage.removeItem(SAVE_KEY);
                 location.reload();
             }
         }
 
+        function notify(msg, type) {
+            const n = document.createElement('div');
+            n.className = `notif ${type}`; n.innerText = msg;
+            document.getElementById('notif-area').appendChild(n);
+            setTimeout(() => n.remove(), 3000);
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('open'), 10); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); setTimeout(() => document.getElementById(id).style.display = 'none', 300); }
+        function saveGame() { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
+        function rInt(min, max) { return Math.floor(Math.random() * (max - min + 1) ) + min; }
+
     </script>
 </body>
-</html>\
+</html>
